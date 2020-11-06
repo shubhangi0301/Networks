@@ -1,61 +1,153 @@
-#include<iostream>
+#include <iostream>
+
 using namespace std;
-void division(int temp[],int gen[],int n,int r)
-{
- for(int i=0;i<n;i++)
- {
-     if (gen[0]==temp[i])
-     {
-         for(int j=0,k=i;j<r+1;j++,k++)
-             if(!(temp[k]^gen[j]))
-                 temp[k]=0;
-             else
-                 temp[k]=1;
-     } }}
+string crc(int n,int a,char t[],char g[])
+{   int i,e;
+    char cs[30];
+    for(e=0;e<n;e++)
+    {
+        cs[e]=t[e];
+    }
+    do{
+    if(cs[0]=='1')
+    {
+    for(int j=1;j<n;j++)
+    {
+        cs[j]=((cs[j]==g[j])?'0':'1');
+    }
+    }
+    for(i=0;i<n-1;i++)
+    {
+        cs[i]=cs[i+1];
+    }
+    cs[i]=t[e++];
+    }while(e<=a+n-1);
+    cout<<"\nremainder is: "<<cs<<endl;
+    string s = ""; 
+    for (int k = 0; k < sizeof(cs); k++) { 
+        s = s + cs[k]; 
+    } 
+    return s;
+}
+
+int e;
 int main()
-{int n,r,message[50],gen[50],temp[50];
- cout<<"At Sender's End "<<endl;
- cout<<"Enter the number of message bits : ";
- cin>>n;
- cout<<"Enter the number of generator bits : ";
- cin>>r;
- cout<<"Enter the message : ";
- for(int i=0;i<n;i++)
-     cin>>message[i];
- cout<<"Enter the generator : ";
- for(int i=0;i<r;i++)
-     cin>>gen[i];
- r--;
- for(int i=0;i<r;i++)
-     message[n+i] = 0;
- for(int i=0;i<n+r;i++)
-     temp[i] = message[i];
- division(temp,gen,n,r);
- cout<<"CRC : ";
- for(int i=0;i<r;i++)
- {
-     cout<<temp[n+i]<<" ";
-     message[n+i] = temp[n+i];
- }
- cout<<endl<<"Transmitted Message : ";
- for(int i=0;i<n+r;i++)
-     cout<<message[i]<<" ";
- cout<<endl<<endl<<"At Receiver's End "<<endl;
- cout<<"Enter the received message : ";
- for(int i=0;i<n+r;i++)
-     cin>>message[i];
- for(int i=0;i<n+r;i++)
-     temp[i] = message[i];
- division(temp,gen,n,r);
- for(int i=0;i<r;i++)
- {
-     if(temp[n+i])
+{int flag=1;
+   string g;
+   cout<<"Enter generator polynomial"<<endl;
+   cin>>g;
+   char gen[g.length()];
+    for (int i = 0; i < g.length(); i++) { 
+        gen[i] = g[i]; 
+    }
+    while(gen[0]!='1'||gen[g.length()-1]!='1')
+    {   
+        cout<<"Enter generator polynomial again"<<endl;
+   cin>>g;
+    gen[g.length()];
+    for (int i = 0; i < g.length(); i++) { 
+        gen[i] = g[i]; 
+    }
+    if(gen[0]=='1'&&gen[g.length()-1]=='1')
+    {
+        break;
+    }
+    }
+   cout<<"Your generator polynomial is: "<<endl;
+   for(int i=0;i<g.length();i++)
+   {
+       cout<<gen[i]<<" ";
+   }
+   int n;
+   string trans;
+   n=g.length();
+   cout<<endl;
+   cout<<"Enter your text message"<<endl;
+   cin>>trans;
+   char t[trans.length()];
+   for(int i=0;i<trans.length();i++)
+   {
+       t[i]=trans[i];
+   }
+   int a;
+   a=trans.length();
+   while(n>=a)
+   {
+       cout<<"Enter your text message again"<<endl;
+       cin>>trans;
+       t[trans.length()];
+       for(int i=0;i<trans.length();i++)
+       {
+           t[i]=trans[i];
+       }
+       a=trans.length();
+       if(n<a)
+       {
+           break;
+       }
+   }
+   cout<<"Your text message is: "<<endl;
+   for(int i=0;i<trans.length();i++)
+   {
+       cout<<t[i]<<" ";
+   }
+   for(int e=a;e<a+n-1;e++)
+   {
+       t[e]='0';
+   }
+   cout<<"\nPadded data is: "<<t<<endl;
+   string s;
+   s=crc(n,a,t,gen);
+   char cs[s.length()];
+   for (int i = 0; i < a+n-1; i++) { 
+        cs[i] = s[i]; 
+    } 
+   for(int i=a;i<sizeof(cs);i++)
+   {
+       t[i]=cs[i-a];
+   }
+   cout<<"Transmitted Data is: "<<endl;
+   for(int i=0;i<a+n-1;i++)
+   {
+       cout<<t[i]<<" ";
+   }
+   char ch;
+   int er;
+   cout<<"\nWant to add errors?: "<<endl;
+   cin>>ch;
+   if(ch=='y'||ch=='Y')
+   {
+       cout<<"Enter the index of transmitted bit to flip the bit"<<endl;
+       cin>>er;
+       if(t[er-1]=='0')
+       {
+           t[er-1]='1';
+       }
+       else
+       if(t[er-1]=='1')
+       {
+           t[er-1]='0';
+       }
+       cout<<"Transmitted Data recieved is: "<<endl;
+    for(int i=0;i<a+n-1;i++)
      {
-         cout<<"Error detected in received message.";
-         return 0;
-     } }
- cout<<"No error in received Message.\nReceived Message : ";
- for(int i=0;i<n;i++)
-     cout<<message[i]<<" ";
- return 0;
+       cout<<t[i]<<" ";
+     }
+     string s1;
+   s1=crc(n,a,t,gen);
+   string s2="";
+   for(int i=0;i<n-1;i++)
+   {
+       s2=s2+'0';
+   }
+   if(s2==s1)
+   {
+       cout<<"Error not found"<<endl;
+   }
+   else
+   {
+       cout<<"Error detected"<<endl;
+   }
+   }
+    return 0;
 }
