@@ -1,0 +1,15 @@
+Enter generator polynomial: 1001
+Your generator polynomial is: 1001
+
+Enter your text message: 10011101
+Your text message is: 10011101
+Padded data is: 10011101000
+
+remainder is: 100
+transmitted data is: 10011101100
+Want to add errors?: y
+
+Enter the index of transmitted bit to flip the bit:7
+Transmitted Data recieved is: 10011111100
+remainder is: 111
+Error detected
